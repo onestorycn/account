@@ -1,0 +1,82 @@
+{
+  "device" :{
+    "dev":{
+      "host" : "192.168.2.223:30023",
+      "service_name" : "whale.device.proto",
+      "init" : 1,
+      "capacity" : 100
+    },
+    "test":{
+      "host" : "mango-device:50051",
+      "service_name" : "whale.device.proto",
+      "init" : 1,
+      "capacity" : 100
+    },
+    "online":{
+      "host" : "192.168.2.223:30023",
+      "service_name" : "whale.device.proto",
+      "init" : 1,
+      "capacity" : 100
+    }
+  },
+  "box" :{
+    "dev":{
+      "host" : "192.168.2.223:30023",
+      "service_name" : "whale.device.proto",
+      "init" : 1,
+      "capacity" : 100
+    },
+    "test":{
+      "host" : "mango-device:50051",
+      "service_name" : "whale.device.proto",
+      "init" : 1,
+      "capacity" : 100
+    },
+    "online":{
+      "host" : "192.168.2.223:30023",
+      "service_name" : "whale.device.proto",
+      "init" : 1,
+      "capacity" : 100
+    }
+  },
+  "product" :{
+    "dev":{
+      "host" : "192.168.2.222:31484",
+      "service_name" : "whale.product.proto",
+      "init" : 1,
+      "capacity" : 100
+    },
+    "test":{
+      "host" : "mango-product:50051",
+      "service_name" : "whale.product.proto",
+      "init" : 1,
+      "capacity" : 100
+    },
+    "online":{
+      "host" : "192.168.2.222:30356",
+      "service_name" : "whale.product.proto",
+      "init" : 1,
+      "capacity" : 100
+    }
+  },
+  "stock" :{
+    "dev":{
+      "host" : "192.168.2.222:30356",
+      "service_name" : "whale.stock.proto",
+      "init" : 1,
+      "capacity" : 100
+    },
+    "test":{
+      "host" : "mango-stock:50051",
+      "service_name" : "whale.stock.proto",
+      "init" : 1,
+      "capacity" : 100
+    },
+    "online":{
+      "host" : "192.168.2.222:30356",
+      "service_name" : "whale.stock.proto",
+      "init" : 1,
+      "capacity" : 100
+    }
+  }
+}
