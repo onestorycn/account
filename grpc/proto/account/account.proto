@@ -2,9 +2,10 @@ syntax = "proto3";
 package onestory.account.proto;
 
 service AccountService {
-    rpc InsertAccountInfo (Request) returns (Response) {}
+    rpc InsertAccountInfo (Request) returns (ResponseSafe) {}
     rpc UpdateAccountInfo (Request) returns (Response) {}
     rpc GetAccountInfo (RequestQuery) returns (ResponseSafe) {}
+    rpc LoginAccount (RequestLogin) returns (ResponseSafe) {}
 }
 
 message FullAccount{
@@ -13,7 +14,7 @@ message FullAccount{
    string PassId = 3;
    string Password = 4;
    string Email = 5;
-   int32 Phone = 6;
+   int64 Phone = 6;
    string NickName = 7;
    string Avatar = 8;
    string Ext = 9;
@@ -23,7 +24,7 @@ message SafeAccount{
     string OpenId = 2;
     string PassId = 3;
     string Email = 5;
-    int32 Phone = 6;
+    int64 Phone = 6;
     string NickName = 7;
     string Avatar = 8;
     string Ext = 9;
@@ -32,7 +33,13 @@ message SafeAccount{
 message RequestQuery{
    string OpenId = 1;
    string PassId = 2;
-   int32 Phone = 3;
+   int64 Phone = 3;
+}
+
+message RequestLogin{
+   string email = 1;
+   int64 Phone = 2;
+   string password = 3;
 }
 
 message Request{

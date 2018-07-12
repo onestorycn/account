@@ -11,6 +11,7 @@ It has these top-level messages:
 	FullAccount
 	SafeAccount
 	RequestQuery
+	RequestLogin
 	Request
 	Response
 	ResponseSafe
@@ -46,9 +47,10 @@ var _ server.Option
 // Client API for AccountService service
 
 type AccountService interface {
-	InsertAccountInfo(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	InsertAccountInfo(ctx context.Context, in *Request, opts ...client.CallOption) (*ResponseSafe, error)
 	UpdateAccountInfo(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 	GetAccountInfo(ctx context.Context, in *RequestQuery, opts ...client.CallOption) (*ResponseSafe, error)
+	LoginAccount(ctx context.Context, in *RequestLogin, opts ...client.CallOption) (*ResponseSafe, error)
 }
 
 type accountService struct {
@@ -69,9 +71,9 @@ func NewAccountService(name string, c client.Client) AccountService {
 	}
 }
 
-func (c *accountService) InsertAccountInfo(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+func (c *accountService) InsertAccountInfo(ctx context.Context, in *Request, opts ...client.CallOption) (*ResponseSafe, error) {
 	req := c.c.NewRequest(c.name, "AccountService.InsertAccountInfo", in)
-	out := new(Response)
+	out := new(ResponseSafe)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -99,19 +101,31 @@ func (c *accountService) GetAccountInfo(ctx context.Context, in *RequestQuery, o
 	return out, nil
 }
 
+func (c *accountService) LoginAccount(ctx context.Context, in *RequestLogin, opts ...client.CallOption) (*ResponseSafe, error) {
+	req := c.c.NewRequest(c.name, "AccountService.LoginAccount", in)
+	out := new(ResponseSafe)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for AccountService service
 
 type AccountServiceHandler interface {
-	InsertAccountInfo(context.Context, *Request, *Response) error
+	InsertAccountInfo(context.Context, *Request, *ResponseSafe) error
 	UpdateAccountInfo(context.Context, *Request, *Response) error
 	GetAccountInfo(context.Context, *RequestQuery, *ResponseSafe) error
+	LoginAccount(context.Context, *RequestLogin, *ResponseSafe) error
 }
 
 func RegisterAccountServiceHandler(s server.Server, hdlr AccountServiceHandler, opts ...server.HandlerOption) {
 	type accountService interface {
-		InsertAccountInfo(ctx context.Context, in *Request, out *Response) error
+		InsertAccountInfo(ctx context.Context, in *Request, out *ResponseSafe) error
 		UpdateAccountInfo(ctx context.Context, in *Request, out *Response) error
 		GetAccountInfo(ctx context.Context, in *RequestQuery, out *ResponseSafe) error
+		LoginAccount(ctx context.Context, in *RequestLogin, out *ResponseSafe) error
 	}
 	type AccountService struct {
 		accountService
@@ -124,7 +138,7 @@ type accountServiceHandler struct {
 	AccountServiceHandler
 }
 
-func (h *accountServiceHandler) InsertAccountInfo(ctx context.Context, in *Request, out *Response) error {
+func (h *accountServiceHandler) InsertAccountInfo(ctx context.Context, in *Request, out *ResponseSafe) error {
 	return h.AccountServiceHandler.InsertAccountInfo(ctx, in, out)
 }
 
@@ -134,4 +148,8 @@ func (h *accountServiceHandler) UpdateAccountInfo(ctx context.Context, in *Reque
 
 func (h *accountServiceHandler) GetAccountInfo(ctx context.Context, in *RequestQuery, out *ResponseSafe) error {
 	return h.AccountServiceHandler.GetAccountInfo(ctx, in, out)
+}
+
+func (h *accountServiceHandler) LoginAccount(ctx context.Context, in *RequestLogin, out *ResponseSafe) error {
+	return h.AccountServiceHandler.LoginAccount(ctx, in, out)
 }

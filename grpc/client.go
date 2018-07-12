@@ -23,7 +23,9 @@ func main() {
 		fmt.Println(err)
 	}
 	cl := account.NewAccountServiceClient(client.ClientConn)
-	rsp, err := cl.GetAccountInfo(context.TODO(), &account.RequestQuery{PassId:"12345"})
+	//Info := &account.FullAccount{PassId:"", Phone:13512415778, Email:"605714010@qq.com", NickName:"tom", Ext:"", OpenId:"", Password:"333333333333", Avatar:""}
+	//rsp, err := cl.InsertAccountInfo(context.TODO(), &account.Request{Info:Info})
+	rsp, err := cl.LoginAccount(context.TODO(), &account.RequestLogin{Email:"605714010@qq.com", Password:"333333333333"})
 	if err != nil {
 		fmt.Println(err)
 		return
