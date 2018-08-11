@@ -4,7 +4,7 @@ import(
 	grpc2 "google.golang.org/grpc"
 	"github.com/processout/grpc-go-pool"
 	"time"
-	"whale-market/library/logger"
+	"account/library/logger"
 	"go.uber.org/zap"
 	"sync"
 )
@@ -30,7 +30,7 @@ func (service *ServiceConfig)createPoll() (*grpcpool.Pool, error) {
 		return grpc2.Dial(service.address, grpc2.WithInsecure())
 	}, service.init, service.capacity, time.Second)
 	if errPoll != nil{
-		logger.ZapError.Error("init poll fail ", zap.Error(errPoll))
+		logger.ZapError.Info("init poll fail ", zap.Error(errPoll))
 	}
 	return p, errPoll
 }

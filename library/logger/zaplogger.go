@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"encoding/json"
-	"whale-market/library/config"
+	"account/library/config"
 )
 
 var (

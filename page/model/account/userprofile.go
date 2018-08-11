@@ -7,6 +7,7 @@ import (
 	"account/library"
 	"errors"
 	"time"
+	"strconv"
 )
 
 var (
@@ -21,7 +22,7 @@ type UserProfile struct {
 	Openid      string `gorm:"not null" json:"openid"`
 	Passid      string `gorm:"unique; not null" json:"passid"`
 	Email       string `gorm:"unique; not null" json:"email"`
-	Phone       int32  `gorm:"unique; not null" json:"phone"`
+	Phone       int64  `gorm:"unique; not null" json:"phone"`
 	Password    string `gorm:"not null" json:"password"`
 	Update_time int64  `gorm:"not null" json:"update_time"`
 	Nick_name   string `gorm:"not null" json:"nick_name"`
@@ -68,6 +69,9 @@ func LoadAccountService() (accountService *AccountService) {
 
 func (accountService *AccountService) InsertNewUser(user *UserProfile) error {
 	conn := accountService.DbInstance.CheckAndReturnConn()
+	getId := accountService.generatePassIdByTime()
+	user.Passid = getId
+	user.Openid = getId
 	res := conn.Create(&user)
 	if res.Error != nil {
 		return res.Error
@@ -78,6 +82,9 @@ func (accountService *AccountService) InsertNewUser(user *UserProfile) error {
 func (accountService *AccountService) GetUserById(passId, openId string) (*UserProfile, error) {
 	userProfile := new(UserProfile)
 	conn := accountService.DbInstance.CheckAndReturnConn()
+	if conn == nil {
+		return nil , errors.New("get db connection fail")
+	}
 	if len(openId) < 1 || openId == ""{
 		if len(passId) < 1 {
 			return nil, errors.New("empty passid")
@@ -98,8 +105,11 @@ func (accountService *AccountService) GetUserById(passId, openId string) (*UserP
 	return userProfile, nil
 }
 
-func (accountService *AccountService) GetUserByPhone(phone int32) (*UserProfile, error) {
+func (accountService *AccountService) GetUserByPhone(phone int64) (*UserProfile, error) {
 	conn := accountService.DbInstance.CheckAndReturnConn()
+	if conn == nil {
+		return nil , errors.New("get db connection fail")
+	}
 	if phone == 0 {
 		return nil, errors.New("empty phone")
 	}
@@ -111,7 +121,7 @@ func (accountService *AccountService) GetUserByPhone(phone int32) (*UserProfile,
 	return userProfile, nil
 }
 
-func (accountService *AccountService) UpdateUser(Password, Email, NickName, Avatar, Ext , PassId string, Phone int32, isDeActive bool) (int64, error) {
+func (accountService *AccountService) UpdateUser(Password, Email, NickName, Avatar, Ext , PassId string, Phone int64, isDeActive bool) (int64, error) {
 	var updates = make(map[string]interface{}, 0)
 	if resBool := library.IsEmpty(Password); !resBool {
 		updates["password"] = Password
@@ -143,10 +153,44 @@ func (accountService *AccountService) UpdateUser(Password, Email, NickName, Avat
 	updates["update_time"] = time.Now().Unix()
 
 	conn := accountService.DbInstance.CheckAndReturnConn()
+	if conn == nil {
+		return 0 , errors.New("get db connection fail")
+	}
 	user := new(UserProfile)
 	upRes := conn.Model(&user).Where("passid = ?", PassId).Updates(updates)
 	if upRes.Error != nil {
 		return 0, upRes.Error
 	}
 	return upRes.RowsAffected, nil
+}
+
+func (accountService *AccountService) CheckUserLoginByPhone(phone int64, password string) (*UserProfile, error) {
+	userProfile := new(UserProfile)
+	conn := accountService.DbInstance.CheckAndReturnConn()
+	if conn == nil {
+		return nil , errors.New("get db connection fail")
+	}
+	res := conn.Where("phone = ? and password = ?", phone, password).First(&userProfile)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return userProfile, nil
+}
+
+func  (accountService *AccountService) CheckUserLoginByEmail(email, password string) (*UserProfile, error) {
+	userProfile := new(UserProfile)
+	conn := accountService.DbInstance.CheckAndReturnConn()
+	if conn == nil {
+		return nil , errors.New("get db connection fail")
+	}
+	res := conn.Where("email = ? and password = ?", email, password).First(&userProfile)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return userProfile, nil
+}
+
+func (accountService *AccountService)generatePassIdByTime() string {
+	id := time.Now().Unix() * 10000 + int64(library.RandInt(1,9999))
+	return strconv.FormatInt(id, 10)
 }

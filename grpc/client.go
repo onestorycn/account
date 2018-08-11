@@ -11,7 +11,7 @@ import (
 
 func main() {
 	p, errPoll := grpcpool.New(func() (*grpc2.ClientConn, error) {
-		return grpc2.Dial("127.0.0.1:9999", grpc2.WithInsecure())
+		return grpc2.Dial("127.0.0.1:9994", grpc2.WithInsecure())
 	}, 1, 100, time.Second)
 
 	if errPoll != nil {

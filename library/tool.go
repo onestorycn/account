@@ -4,6 +4,8 @@ import (
 	"math/rand"
 	"time"
 	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 )
 
 func RandomString(l int) string {
@@ -50,4 +52,11 @@ func IsEmpty(input interface{}) bool {
 		break
 	}
 	return false
+}
+
+func EncodeMd5(rawVal string) string {
+	h := md5.New()
+	h.Write([]byte(rawVal))
+	cipherStr := h.Sum(nil)
+	return hex.EncodeToString(cipherStr)
 }

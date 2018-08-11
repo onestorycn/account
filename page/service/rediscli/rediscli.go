@@ -3,7 +3,7 @@ package rediscli
 import (
 	"github.com/garyburd/redigo/redis"
 	"time"
-	"whale-market/library/config"
+	"account/library/config"
 	"fmt"
 	"errors"
 	"sync"

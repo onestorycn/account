@@ -5,7 +5,10 @@ import (
 	"github.com/micro/go-config"
 	"fmt"
 	"errors"
+	"sync"
 )
+
+var cacheConf sync.Map
 
 func GetConfigMap(confName string) (mapRes map[string]interface{}) {
 	defer func(){
@@ -14,6 +17,12 @@ func GetConfigMap(confName string) (mapRes map[string]interface{}) {
 		}
 	}()
 
+	finderKey := fmt.Sprintf("conf-%s", confName)
+	if res, ok := cacheConf.Load(finderKey); ok {
+		if back, okMap := res.(map[string]interface{}); okMap {
+			return back
+		}
+	}
 	confPath := fmt.Sprintf("config/%s.json", confName)
 	errLoad := config.Load(file.NewSource(
 		file.WithPath(confPath),
@@ -23,6 +32,9 @@ func GetConfigMap(confName string) (mapRes map[string]interface{}) {
 		return nil
 	}
 	confGet := config.Map()
+	if len(confGet) > 0 {
+		cacheConf.Store(finderKey, confGet)
+	}
 	return confGet
 }
 
@@ -51,6 +63,7 @@ func GetServiceEnv(envString string) interface{} {
 	}
 	return nil
 }
+
 
 func GetDefaultGrpcConfig(envString, grpcName string, obj interface{}) (err error) {
 	defer func(){
